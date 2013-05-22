@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">MedEq</string>
+    <string name="add.patient">Добавить пациента</string>
+    <string name="patients">Пациенты</string>
+    <string name="app.about">О программе</string>
+    <string name="app.manual">Руководство пользователя</string>
+
+    <string name="hifu">HIFU</string>
+    <string name="hifu_tur">ТУР + HIFU</string>
+    <string name="healed">Лечение проведено</string>
+    <string name="not.healed">Лечение не проведено</string>
+    <string name="ok">Ок</string>
+    <string name="accept">Применить</string>
+    <string name="cancel">Отмена</string>
+    <string name="therapy_filter_title">Фильтр</string>
+    <string name="all">Все</string>
+    <string name="therapy">Терапия</string>
+    <string name="treatment">Лечение</string>
+    <string name="patient.fio">ФИО</string>
+    <string name="patient.age">Возраст</string>
+    <string name="characteristics">Характеристики</string>
+    <string name="patient.stageTNA">Стадия заболевания по TNM</string>
+    <string name="patient.psa">ПСА</string>
+    <string name="patient.glisson">Глиссон</string>
+    <string name="patient.prostateVolume">Объем простаты</string>
+    <string name="patient.prostateVolumeHifu">Объем протаты перед HIFU</string>
+    <string name="patient.prostateLengthHifu">Длина простаты перед HIFU</string>
+    <string name="patient.prostateWidthHifu">Ширина простаты перед HIFU</string>
+    <string name="patient.prostateHeightHifu">Высота простаты перед HIFU</string>
+    <string name="patient.maxUrineVelocity">Макс. скорость потока мочи</string>
+    <string name="patient.avUrineVelocity">Стредняя скорость потока мочи</string>
+    <string name="patient.residualUrine">Остаточная моча</string>
+    <string name="results">Результаты</string>
+    <string name="patient.treatment">Терапия</string>
+    <string name="patient.urinaryIncontinence">Недержание мочи</string>
+    <string name="patient.acuteUrinaryRetention">Острая задержка мочи</string>
+    <string name="patient.diseaseProgression">Прогрессия заболевания</string>
+    <string name="patient.stricture">Стриктура</string>
+    <string name="patient.healed">Лечение проведено</string>
+    <string name="yes">Да</string>
+    <string name="no">Нет</string>
+    <string name="view">Просмотреть</string>
+    <string name="delete">Удалить</string>
+    <string name="calculate">Рассчитать</string>
+    <string name="e.illegalInput">Ошибка! Неверный формат данных.</string>
+    <string name="e.emptyFio">Поле ФИО не может быть пустым</string>
+    <string name="error_caught">Произошла ошибка. Пожалуйста, отправьте письмо с отчетом.</string>
+    <string name="deletion">Удаление</string>
+    <string name="delete.confirmation">Вы действительно хотите удалить пациента?</string>
+
+    <string-array name="therapy">
+        <item>Все</item>
+        <item>HIFU</item>
+        <item>ТУР + HIFU</item>
+        <item>Не рекомендуется</item>
+    </string-array>
+
+    <string-array name="treatment">
+        <item>Все</item>
+        <item>Лечение не проведено</item>
+        <item>Лечение проведено</item>
+    </string-array>
+
+    <string-array name="therapy_edit">
+        <item>HIFU</item>
+        <item>ТУР + HIFU</item>
+        <item>Не рекомендуется</item>
+    </string-array>
+</resources>
