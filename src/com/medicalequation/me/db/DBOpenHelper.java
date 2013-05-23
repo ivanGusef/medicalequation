@@ -3,6 +3,8 @@ package com.medicalequation.me.db;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import com.medicalequation.me.R;
+import com.medicalequation.me.utils.IOUtils;
 
 /**
  * Created with IntelliJ IDEA.
@@ -25,12 +27,44 @@ public class DBOpenHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        PatientTable.onCreate(mContext,db);
+        try {
+            db.beginTransaction();
+            PatientTable.onCreate(db);
+            TreatmentTable.onCreate(db);
+            init(mContext, db);
+            db.setTransactionSuccessful();
+        } finally {
+            db.endTransaction();
+        }
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        if (newVersion > oldVersion)
-            PatientTable.onUpgrade(mContext,db);
+        if (newVersion > oldVersion) {
+            try {
+                db.beginTransaction();
+                PatientTable.onUpgrade(db);
+                TreatmentTable.onUpgrade(db);
+                init(mContext, db);
+                db.setTransactionSuccessful();
+            } finally {
+                db.endTransaction();
+            }
+        }
+    }
+
+    private static void init(Context context, SQLiteDatabase db) {
+        String sql = IOUtils.readResourceAsString(context, R.raw.init_db);
+        String[] strings = sql.split(";");
+        executeStatements(strings, db);
+    }
+
+    private static void executeStatements(String[] strings, SQLiteDatabase db) {
+        for (String string : strings) {
+            String str = string.replace("\n", "").trim().replace("\t", "");
+            if (str.length() > 0) {
+                db.execSQL(string);
+            }
+        }
     }
 }

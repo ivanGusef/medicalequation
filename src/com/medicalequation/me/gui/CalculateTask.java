@@ -110,7 +110,7 @@ public class CalculateTask extends AsyncTask<Double, Void, CalculateTask.Result>
     private Cursor getPatients(boolean turExistence) {
         return mContext.getContentResolver().query(PatientProvider.CONTENT_URI,
                 null,
-                PatientTable.CN_HEALED + " = ? AND " + PatientTable.СТ_RECOMMENDED_THERAPY + " = ?",
+                PatientTable.CN_HEALED + " = ? AND " + PatientTable.СТ_TREATMENT_ID + " = ?",
                 new String[]{"1", turExistence ? "1" : "0"},
                 null);
     }

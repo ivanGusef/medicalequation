@@ -1,9 +1,6 @@
 package com.medicalequation.me.db;
 
-import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
-import com.medicalequation.me.R;
-import com.medicalequation.me.utils.IOUtils;
 
 /**
  * Created with IntelliJ IDEA.
@@ -29,12 +26,12 @@ public class PatientTable {
     public static final String CN_MAX_URINE_VELOCITY = "max_urine_velocity";
     public static final String CN_AV_URINE_VELOCITY = "av_urine_velocity";
     public static final String CN_RESIDUAL_URINE = "residual_urine";
-    public static final String СТ_RECOMMENDED_THERAPY = "recommended_therapy";
     public static final String CN_URINARY_INCONTINENCE = "urinary_incontinence";
     public static final String CN_ACUTE_URINARY_RETENTION = "acute_urinary_retention";
     public static final String CN_DISEASE_PROGRESSION = "disease_progression";
     public static final String CN_STRICTURE = "stricture";
     public static final String CN_HEALED = "healed";
+    public static final String СТ_TREATMENT_ID = "treatment_id";
     public static final String CREATE_SCRIPT;
 
     static {
@@ -54,38 +51,21 @@ public class PatientTable {
         sb.append(CN_MAX_URINE_VELOCITY).append(" REAL, ");
         sb.append(CN_AV_URINE_VELOCITY).append(" REAL, ");
         sb.append(CN_RESIDUAL_URINE).append(" INTEGER, ");
-        sb.append(СТ_RECOMMENDED_THERAPY).append(" INTEGER, ");
         sb.append(CN_URINARY_INCONTINENCE).append(" INTEGER, ");
         sb.append(CN_ACUTE_URINARY_RETENTION).append(" INTEGER, ");
         sb.append(CN_DISEASE_PROGRESSION).append(" INTEGER, ");
         sb.append(CN_STRICTURE).append(" INTEGER, ");
-        sb.append(CN_HEALED).append(" INTEGER)");
+        sb.append(CN_HEALED).append(" INTEGER, ");
+        sb.append(СТ_TREATMENT_ID).append(" INTEGER);");
         CREATE_SCRIPT = sb.toString();
     }
 
-    public static void onCreate(Context context, SQLiteDatabase db) {
+    public static void onCreate(SQLiteDatabase db) {
         db.execSQL(CREATE_SCRIPT);
-        init(context,db);
     }
 
-    public static void onUpgrade(Context context, SQLiteDatabase db) {
+    public static void onUpgrade(SQLiteDatabase db) {
         db.execSQL("DROP TABLE IF EXISTS " + TN_PATIENT);
-        onCreate(context,db);
-    }
-
-    private static void init(Context context, SQLiteDatabase db) {
-        String sql = IOUtils.readResourceAsString(context, R.raw.init_db);
-        String[] strings = sql.split(";");
-        executeStatements(strings, db);
-    }
-
-    private static void executeStatements(String[] strings, SQLiteDatabase db)
-    {
-        for (String string : strings) {
-            String str = string.replace("\n", "").trim().replace("\t", "");
-            if (str.length() > 0) {
-                db.execSQL(string);
-            }
-        }
+        onCreate(db);
     }
 }

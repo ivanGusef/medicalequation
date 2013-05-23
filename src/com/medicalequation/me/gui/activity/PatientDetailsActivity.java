@@ -2,9 +2,8 @@ package com.medicalequation.me.gui.activity;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.content.ContentUris;
-import android.content.ContentValues;
-import android.content.DialogInterface;
+import android.app.LoaderManager;
+import android.content.*;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
@@ -14,16 +13,23 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.animation.AnimationUtils;
-import android.widget.*;
+import android.widget.CheckBox;
+import android.widget.Spinner;
+import android.widget.TextView;
+import android.widget.ViewFlipper;
 import com.medicalequation.me.C;
 import com.medicalequation.me.R;
 import com.medicalequation.me.db.PatientProvider;
 import com.medicalequation.me.db.PatientTable;
-import com.medicalequation.me.gui.CalculateTask;
+import com.medicalequation.me.db.TreatmentTable;
 import com.medicalequation.me.exception.ValidateException;
+import com.medicalequation.me.gui.CalculateTask;
+import com.medicalequation.me.gui.TreatmentAdapter;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created with IntelliJ IDEA.
@@ -32,7 +38,9 @@ import java.math.RoundingMode;
  * Time: 1:20
  * May the Force be with you, always
  */
-public class PatientDetailsActivity extends Activity implements Handler.Callback {
+public class PatientDetailsActivity extends Activity implements Handler.Callback, LoaderManager.LoaderCallbacks<Cursor> {
+
+    private static final String ID_KEY = "id";
 
     private boolean mEditMode;
 
@@ -41,6 +49,7 @@ public class PatientDetailsActivity extends Activity implements Handler.Callback
     private Handler mHandler;
     private View mCalcWrapper;
     private Cursor cursor;
+    private TreatmentAdapter mAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,12 +57,29 @@ public class PatientDetailsActivity extends Activity implements Handler.Callback
         setContentView(R.layout.a_patient);
         mHandler = new Handler(this);
         mFlipper = (ViewFlipper) findViewById(R.id.flipper);
+        mAdapter = new TreatmentAdapter(this);
+        mAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
         long id = getIntent().getLongExtra(C.Extra.ID, 0);
         if (mEditMode = id == 0) {
             refreshUI(null);
         } else {
-            refreshUI(getContentResolver().query(Uri.parse(PatientProvider.CONTENT_URI + "/" + id), null, null, null, null));
+            Bundle b = new Bundle();
+            b.putLong(ID_KEY, id);
+            getLoaderManager().initLoader(1, b, this);
         }
+        getLoaderManager().initLoader(0, null, this);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        getLoaderManager().destroyLoader(0);
+        getLoaderManager().destroyLoader(1);
     }
 
     private void refreshUI(Cursor cursor) {
@@ -82,6 +108,7 @@ public class PatientDetailsActivity extends Activity implements Handler.Callback
             mHolder.healed = mFlipper.getCurrentView().findViewById(R.id.patient_healed);
             if (mEditMode) {
                 mCalcWrapper = findViewById(R.id.calculateWrapper);
+                ((Spinner) mHolder.treatment).setAdapter(mAdapter);
                 mHolder.healed.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -109,17 +136,29 @@ public class PatientDetailsActivity extends Activity implements Handler.Callback
             mHolder.diseaseProgression.setText(cursor.getString(cursor.getColumnIndex(PatientTable.CN_DISEASE_PROGRESSION)));
             mHolder.stricture.setText(cursor.getString(cursor.getColumnIndex(PatientTable.CN_STRICTURE)));
             boolean healed = cursor.getInt(cursor.getColumnIndex(PatientTable.CN_HEALED)) == 1;
-            int recommendedTherapy = cursor.getInt(cursor.getColumnIndex(PatientTable.СТ_RECOMMENDED_THERAPY));
+            long recommendedTherapy = cursor.getLong(cursor.getColumnIndex(PatientTable.СТ_TREATMENT_ID));
             if (mEditMode) {
                 mCalcWrapper.setVisibility(healed ? View.GONE : View.VISIBLE);
                 ((CheckBox) mHolder.healed).setChecked(healed);
-                ((Spinner) mHolder.treatment).setSelection(recommendedTherapy);
+                ((Spinner) mHolder.treatment).setSelection(mAdapter.getPositionById(recommendedTherapy));
             } else {
                 ((TextView) mHolder.healed).setText(healed ? R.string.yes : R.string.no);
-                ((TextView) mHolder.treatment).setText(getResources().getStringArray(R.array.therapy_edit)[recommendedTherapy]);
+                ((TextView) mHolder.treatment).setText(getTreatmentName(recommendedTherapy));
             }
         }
         mFlipper.getCurrentView().setTag(mHolder);
+    }
+
+    private String getTreatmentName(long id) {
+        String result = getString(R.string.not_recommended);
+        Cursor c = getContentResolver().query(Uri.parse(PatientProvider.TREATMENT_URI + "/" + id), null, null, null, null);
+        if (c != null) {
+            if (c.moveToFirst()) {
+                result = c.getString(c.getColumnIndex(TreatmentTable.CN_NAME));
+            }
+            c.close();
+        }
+        return result;
     }
 
     @Override
@@ -222,8 +261,8 @@ public class PatientDetailsActivity extends Activity implements Handler.Callback
         cv.put(PatientTable.CN_ACUTE_URINARY_RETENTION, mHolder.acuteUrinaryRetention.getText().toString());
         cv.put(PatientTable.CN_DISEASE_PROGRESSION, mHolder.diseaseProgression.getText().toString());
         cv.put(PatientTable.CN_STRICTURE, mHolder.stricture.getText().toString());
-        cv.put(PatientTable.СТ_RECOMMENDED_THERAPY, ((Spinner) mHolder.treatment).getSelectedItemPosition());
         cv.put(PatientTable.CN_HEALED, ((CheckBox) mHolder.healed).isChecked() ? 1 : 0);
+        cv.put(PatientTable.СТ_TREATMENT_ID, ((Spinner) mHolder.treatment).getSelectedItemId());
         long id;
         if (cursor != null) {
             id = cursor.getLong(cursor.getColumnIndex(PatientTable.CN_ID));
@@ -372,6 +411,42 @@ public class PatientDetailsActivity extends Activity implements Handler.Callback
         } else {
             super.onBackPressed();
         }
+    }
+
+    private List<TreatmentAdapter.KeyValueItem> parseCursor(Cursor cursor) {
+        List<TreatmentAdapter.KeyValueItem> keyValueItems = new ArrayList<TreatmentAdapter.KeyValueItem>();
+        if (cursor != null) {
+            if (cursor.moveToFirst()) {
+                do {
+                    keyValueItems.add(new TreatmentAdapter.KeyValueItem(cursor.getLong(0), cursor.getString(1)));
+                } while (cursor.moveToNext());
+            }
+            cursor.close();
+        }
+        return keyValueItems;
+    }
+
+    @Override
+    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+        if (id == 0) {
+            return new CursorLoader(this, PatientProvider.TREATMENT_URI, null, null, null, null);
+        } else {
+            return new CursorLoader(this, Uri.parse(PatientProvider.CONTENT_URI + "/" + args.getLong(ID_KEY)), null, null, null, null);
+        }
+    }
+
+    @Override
+    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+        if (loader.getId() == 0) {
+            mAdapter.setItems(data);
+        } else {
+            refreshUI(data);
+        }
+    }
+
+    @Override
+    public void onLoaderReset(Loader<Cursor> loader) {
+        mAdapter.setItems(null);
     }
 
     static class ViewHolder {

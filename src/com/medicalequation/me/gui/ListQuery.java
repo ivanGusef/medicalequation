@@ -11,8 +11,8 @@ import com.medicalequation.me.db.PatientTable;
  */
 public class ListQuery {
     public String fio = "";
-    public String therapy = "";
     public String treatment = "";
+    public String healed = "";
 
     public void setFio(String query) {
         if (query.isEmpty()) {
@@ -22,21 +22,21 @@ public class ListQuery {
         }
     }
 
-    public void setTherapy(int index) {
-        if (index == 0) {
-            therapy = "";
+    public void setTreatment(long id) {
+        if (id == 0) {
+            treatment = "";
         } else {
-            therapy = PatientTable.СТ_RECOMMENDED_THERAPY + " = " + (--index);
+            treatment = PatientTable.СТ_TREATMENT_ID + " = " + id;
         }
     }
 
-    public void setTreatment(int index) {
+    public void setHealed(int index) {
         if (index == 0) {
-            treatment = "";
+            healed = "";
         } else if (index == 1) {
-            treatment = PatientTable.CN_HEALED + " = 0";
+            healed = PatientTable.CN_HEALED + " = 0";
         } else if (index == 2) {
-            treatment = PatientTable.CN_HEALED + " = 1";
+            healed = PatientTable.CN_HEALED + " = 1";
         }
     }
 
@@ -45,10 +45,10 @@ public class ListQuery {
         StringBuilder sb = new StringBuilder();
         if (!fio.isEmpty())
             sb.append(fio);
-        if (!therapy.isEmpty())
-            sb.append(sb.length() > 0 ? " AND " + therapy : therapy);
         if (!treatment.isEmpty())
             sb.append(sb.length() > 0 ? " AND " + treatment : treatment);
+        if (!healed.isEmpty())
+            sb.append(sb.length() > 0 ? " AND " + healed : healed);
         return sb.toString();
     }
 }

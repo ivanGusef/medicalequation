@@ -16,10 +16,9 @@
                 android:padding="10dp"
                 android:text="@string/therapy"/>
         <Spinner
-                android:id="@+id/therapyChooser"
+                android:id="@+id/treatmentChooser"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:entries="@array/therapy"
                 android:layout_weight="1"/>
     </LinearLayout>
     <LinearLayout
@@ -34,7 +33,7 @@
                 android:padding="10dp"
                 android:text="@string/treatment"/>
         <Spinner
-                android:id="@+id/treatmentChooser"
+                android:id="@+id/healedChooser"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:entries="@array/treatment"

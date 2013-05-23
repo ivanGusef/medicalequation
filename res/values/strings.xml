@@ -6,8 +6,6 @@
     <string name="app.about">О программе</string>
     <string name="app.manual">Руководство пользователя</string>
 
-    <string name="hifu">HIFU</string>
-    <string name="hifu_tur">ТУР + HIFU</string>
     <string name="healed">Лечение проведено</string>
     <string name="not.healed">Лечение не проведено</string>
     <string name="ok">Ок</string>
@@ -48,23 +46,12 @@
     <string name="error_caught">Произошла ошибка. Пожалуйста, отправьте письмо с отчетом.</string>
     <string name="deletion">Удаление</string>
     <string name="delete.confirmation">Вы действительно хотите удалить пациента?</string>
-
-    <string-array name="therapy">
-        <item>Все</item>
-        <item>HIFU</item>
-        <item>ТУР + HIFU</item>
-        <item>Не рекомендуется</item>
-    </string-array>
+    <string name="not_recommended">Не рекомендуется</string>
+    <string name="loading">Загрузка...</string>
 
     <string-array name="treatment">
         <item>Все</item>
         <item>Лечение не проведено</item>
         <item>Лечение проведено</item>
-    </string-array>
-
-    <string-array name="therapy_edit">
-        <item>HIFU</item>
-        <item>ТУР + HIFU</item>
-        <item>Не рекомендуется</item>
     </string-array>
 </resources>
