@@ -24,7 +24,7 @@ public class ValidateException extends RuntimeException {
             case WRONG_AGE:
                 return "Возраст должен быть в пределах от 1 до 120";
             case WRONG_GLISSON:
-                return "Сумма Глиссона должна быть в пределах от 2 до 10";
+                return "Сумма Глисона должна быть в пределах от 2 до 10";
             default:
                 return super.getMessage();
         }
