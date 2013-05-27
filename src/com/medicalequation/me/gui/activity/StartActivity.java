@@ -25,10 +25,10 @@ public class StartActivity extends Activity {
             case R.id.patients:
                 startActivity(new Intent(this, PatientListActivity.class));
                 break;
-            case R.id.about:
+            case R.id.manual:
                 Toast.makeText(this, "Under construction", Toast.LENGTH_SHORT).show();
                 break;
-            case R.id.manual:
+            case R.id.about:
                 Toast.makeText(this, "Under construction", Toast.LENGTH_SHORT).show();
                 break;
         }
