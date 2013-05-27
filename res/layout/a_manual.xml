@@ -11,7 +11,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
-                android:textSize="16sp"
+                android:textSize="20sp"
                 android:text="@string/manual1"
                 android:layout_marginBottom="5dp"/>
         <TextView
@@ -52,31 +52,36 @@
                 android:layout_height="wrap_content"
                 android:textSize="14sp"
                 android:text="@string/manual6"
-                android:layout_marginBottom="5dp"/>
+                android:layout_marginBottom="5dp"
+                android:layout_marginLeft="15dp"/>
         <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textSize="14sp"
                 android:text="@string/manual7"
-                android:layout_marginBottom="5dp"/>
+                android:layout_marginBottom="5dp"
+                android:layout_marginLeft="15dp"/>
         <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textSize="14sp"
                 android:text="@string/manual8"
-                android:layout_marginBottom="5dp"/>
+                android:layout_marginBottom="5dp"
+                android:layout_marginLeft="15dp"/>
         <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textSize="14sp"
                 android:text="@string/manual9"
-                android:layout_marginBottom="5dp"/>
+                android:layout_marginBottom="5dp"
+                android:layout_marginLeft="15dp"/>
         <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textSize="14sp"
                 android:text="@string/manual10"
-                android:layout_marginBottom="5dp"/>
+                android:layout_marginBottom="5dp"
+                android:layout_marginLeft="15dp"/>
         <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -137,6 +142,7 @@
         <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:gravity="center_horizontal"
                 android:layout_gravity="center_horizontal"
                 android:textSize="14sp"
                 android:text="@string/manual.pict1"
@@ -249,6 +255,7 @@
         <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:gravity="center_horizontal"
                 android:layout_gravity="center_horizontal"
                 android:textSize="14sp"
                 android:text="@string/manual.pict2"
@@ -267,6 +274,7 @@
         <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:gravity="center_horizontal"
                 android:layout_gravity="center_horizontal"
                 android:textSize="14sp"
                 android:text="@string/manual.pict3"
@@ -285,6 +293,7 @@
         <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:gravity="center_horizontal"
                 android:layout_gravity="center_horizontal"
                 android:textSize="14sp"
                 android:text="@string/manual.pict4"
