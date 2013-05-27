@@ -4,6 +4,6 @@
     <item
             android:id="@+id/done"
             android:icon="@drawable/icon_done"
-            android:title="Применить"
+            android:title="Сохранить"
             android:showAsAction="ifRoom|withText"/>
 </menu>
