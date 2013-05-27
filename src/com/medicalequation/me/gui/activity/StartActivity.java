@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.Toast;
 import com.medicalequation.me.R;
 
 public class StartActivity extends Activity {
@@ -26,10 +25,14 @@ public class StartActivity extends Activity {
                 startActivity(new Intent(this, PatientListActivity.class));
                 break;
             case R.id.manual:
-                Toast.makeText(this, "Under construction", Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(this, InfoActivity.class);
+                intent.putExtra(InfoActivity.CONTENT, R.layout.a_manual);
+                startActivity(intent);
                 break;
             case R.id.about:
-                Toast.makeText(this, "Under construction", Toast.LENGTH_SHORT).show();
+                intent = new Intent(this, InfoActivity.class);
+                intent.putExtra(InfoActivity.CONTENT, R.layout.a_about);
+                startActivity(intent);
                 break;
         }
     }

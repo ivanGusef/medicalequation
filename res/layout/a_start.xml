@@ -3,16 +3,13 @@
               android:orientation="vertical"
               android:layout_width="match_parent"
               android:layout_height="match_parent">
-    <TextView
+    <ImageView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:src="@drawable/logo"
+            android:background="@android:color/transparent"
             android:layout_marginLeft="15dp"
-            android:layout_marginRight="15dp"
-            android:minHeight="50dp"
-            android:gravity="center"
-            android:text="Logo"
-            android:textColor="@color/blue.alpha.60"
-            android:background="@color/white"/>
+            android:layout_marginRight="15dp"/>
     <Button
             android:id="@+id/add.patient"
             android:layout_width="match_parent"

@@ -24,6 +24,9 @@
         <activity
                 android:name=".gui.activity.PatientDetailsActivity"
                 android:screenOrientation="portrait"/>
+        <activity
+                android:name=".gui.activity.InfoActivity"
+                android:screenOrientation="portrait"/>
         <provider
                 android:name=".db.PatientProvider"
                 android:authorities="com.medicalequation.me.provider"
