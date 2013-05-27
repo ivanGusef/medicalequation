@@ -40,6 +40,8 @@ import java.util.List;
  */
 public class PatientDetailsActivity extends Activity implements Handler.Callback, LoaderManager.LoaderCallbacks<Cursor> {
 
+
+    private static final String EDIT_MODE_KEY = "edit_mode";
     private static final String ID_KEY = "id";
 
     private boolean mEditMode;
@@ -50,6 +52,18 @@ public class PatientDetailsActivity extends Activity implements Handler.Callback
     private View mCalcWrapper;
     private Cursor cursor;
     private TreatmentAdapter mAdapter;
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putBoolean(EDIT_MODE_KEY, mEditMode);
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        mEditMode = savedInstanceState.getBoolean(EDIT_MODE_KEY);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
