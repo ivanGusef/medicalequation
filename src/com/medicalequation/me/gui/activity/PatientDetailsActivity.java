@@ -45,6 +45,7 @@ public class PatientDetailsActivity extends Activity implements Handler.Callback
     private static final String ID_KEY = "id";
 
     private boolean mEditMode;
+    private long id;
 
     private ViewFlipper mFlipper;
     private ViewHolder mHolder;
@@ -57,12 +58,14 @@ public class PatientDetailsActivity extends Activity implements Handler.Callback
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putBoolean(EDIT_MODE_KEY, mEditMode);
+        outState.putLong(ID_KEY, id);
     }
 
     @Override
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
         mEditMode = savedInstanceState.getBoolean(EDIT_MODE_KEY);
+        id = savedInstanceState.getLong(ID_KEY);
     }
 
     @Override
@@ -73,13 +76,16 @@ public class PatientDetailsActivity extends Activity implements Handler.Callback
         mFlipper = (ViewFlipper) findViewById(R.id.flipper);
         mAdapter = new TreatmentAdapter(this);
         mAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        if (savedInstanceState == null) {
+            id = getIntent().getLongExtra(C.Extra.ID, 0);
+            mEditMode = id == 0;
+        }
     }
 
     @Override
     protected void onStart() {
         super.onStart();
-        long id = getIntent().getLongExtra(C.Extra.ID, 0);
-        if (mEditMode = id == 0) {
+        if (mEditMode) {
             refreshUI(null);
         } else {
             Bundle b = new Bundle();
