@@ -20,7 +20,7 @@
     <string name="characteristics">Характеристики</string>
     <string name="patient.stageTNA">Стадия заболевания по TNM</string>
     <string name="patient.psa">ПСА</string>
-    <string name="patient.glisson">Глиссон</string>
+    <string name="patient.glisson">Сумма Глисона</string>
     <string name="patient.prostateVolume">Объем простаты</string>
     <string name="patient.prostateVolumeHifu">Объем протаты перед HIFU</string>
     <string name="patient.prostateLengthHifu">Длина простаты перед HIFU</string>
