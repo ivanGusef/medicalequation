@@ -27,7 +27,7 @@
     <string name="patient.prostateWidthHifu">Ширина простаты перед HIFU</string>
     <string name="patient.prostateHeightHifu">Высота простаты перед HIFU</string>
     <string name="patient.maxUrineVelocity">Макс. скорость потока мочи</string>
-    <string name="patient.avUrineVelocity">Стредняя скорость потока мочи</string>
+    <string name="patient.avUrineVelocity">Средняя скорость потока мочи</string>
     <string name="patient.residualUrine">Остаточная моча</string>
     <string name="results">Результаты</string>
     <string name="patient.treatment">Терапия</string>
