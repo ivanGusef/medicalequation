@@ -1,16 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:orientation="vertical"
-              android:layout_width="match_parent"
-              android:layout_height="match_parent">
-    <ImageView
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <ImageView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:src="@drawable/logo"
             android:background="@android:color/transparent"
             android:layout_marginLeft="15dp"
-            android:layout_marginRight="15dp"/>
-    <Button
+            android:layout_marginRight="15dp"
+            android:contentDescription="@android:string/unknownName"/>
+
+        <Button
             android:id="@+id/add.patient"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -20,7 +28,8 @@
             android:layout_marginBottom="15dp"
             android:text="@string/add.patient"
             android:onClick="onClick"/>
-    <Button
+
+        <Button
             android:id="@+id/patients"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -29,16 +38,8 @@
             android:layout_marginBottom="15dp"
             android:text="@string/patients"
             android:onClick="onClick"/>
-    <Button
-            android:id="@+id/manual"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="15dp"
-            android:layout_marginRight="15dp"
-            android:layout_marginBottom="15dp"
-            android:text="@string/app.manual"
-            android:onClick="onClick"/>
-    <Button
+
+        <Button
             android:id="@+id/about"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -47,5 +48,15 @@
             android:layout_marginBottom="15dp"
             android:text="@string/app.about"
             android:onClick="onClick"/>
-</LinearLayout>
 
+        <Button
+            android:id="@+id/test"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="15dp"
+            android:layout_marginRight="15dp"
+            android:layout_marginBottom="15dp"
+            android:text="@string/app.test"
+            android:onClick="onClick"/>
+    </LinearLayout>
+</ScrollView>

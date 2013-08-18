@@ -1,6 +1,7 @@
 package com.medicalequation.me.gui;
 
 import com.medicalequation.me.db.PatientTable;
+import com.medicalequation.me.model.therapy.TherapyType;
 
 /**
  * Created with IntelliJ IDEA.
@@ -11,44 +12,36 @@ import com.medicalequation.me.db.PatientTable;
  */
 public class ListQuery {
     public String fio = "";
-    public String treatment = "";
-    public String healed = "";
+    public TherapyType therapy;
 
-    public void setFio(String query) {
-        if (query.isEmpty()) {
-            fio = "";
+    public String fioQuery = "";
+    public String therapyQuery = "";
+
+    public void setFio(String fio) {
+        this.fio = fio;
+        if (fio.isEmpty()) {
+            fioQuery = "";
         } else {
-            fio = PatientTable.CN_FIO + " LIKE '%" + query + "%'";
+            fioQuery = PatientTable.CN_FIO + " LIKE '%" + fio + "%'";
         }
     }
 
-    public void setTreatment(long id) {
-        if (id == 0) {
-            treatment = "";
+    public void setTherapy(TherapyType therapy) {
+        this.therapy = therapy;
+        if (therapy == null) {
+            therapyQuery = "";
         } else {
-            treatment = PatientTable.СТ_TREATMENT_ID + " = " + id;
-        }
-    }
-
-    public void setHealed(int index) {
-        if (index == 0) {
-            healed = "";
-        } else if (index == 1) {
-            healed = PatientTable.CN_HEALED + " = 0";
-        } else if (index == 2) {
-            healed = PatientTable.CN_HEALED + " = 1";
+            therapyQuery = PatientTable.CN_THERAPY + " = '" + therapy + "'";
         }
     }
 
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        if (!fio.isEmpty())
-            sb.append(fio);
-        if (!treatment.isEmpty())
-            sb.append(sb.length() > 0 ? " AND " + treatment : treatment);
-        if (!healed.isEmpty())
-            sb.append(sb.length() > 0 ? " AND " + healed : healed);
+        if (!fioQuery.isEmpty())
+            sb.append(fioQuery);
+        if (!therapyQuery.isEmpty())
+            sb.append(sb.length() > 0 ? " AND " + therapyQuery : therapyQuery);
         return sb.toString();
     }
 }

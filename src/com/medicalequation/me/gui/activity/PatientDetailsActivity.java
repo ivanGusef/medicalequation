@@ -1,35 +1,6 @@
 package com.medicalequation.me.gui.activity;
 
 import android.app.Activity;
-import android.app.AlertDialog;
-import android.app.LoaderManager;
-import android.content.*;
-import android.database.Cursor;
-import android.net.Uri;
-import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.view.View;
-import android.view.animation.AnimationUtils;
-import android.widget.CheckBox;
-import android.widget.Spinner;
-import android.widget.TextView;
-import android.widget.ViewFlipper;
-import com.medicalequation.me.C;
-import com.medicalequation.me.R;
-import com.medicalequation.me.db.PatientProvider;
-import com.medicalequation.me.db.PatientTable;
-import com.medicalequation.me.db.TreatmentTable;
-import com.medicalequation.me.exception.ValidateException;
-import com.medicalequation.me.gui.CalculateTask;
-import com.medicalequation.me.gui.TreatmentAdapter;
-
-import java.math.BigDecimal;
-import java.math.RoundingMode;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created with IntelliJ IDEA.
@@ -38,10 +9,10 @@ import java.util.List;
  * Time: 1:20
  * May the Force be with you, always
  */
-public class PatientDetailsActivity extends Activity implements Handler.Callback, LoaderManager.LoaderCallbacks<Cursor> {
+public class PatientDetailsActivity extends Activity {
 
 
-    private static final String EDIT_MODE_KEY = "edit_mode";
+    /*private static final String EDIT_MODE_KEY = "edit_mode";
     private static final String ID_KEY = "id";
 
     private boolean mEditMode;
@@ -489,5 +460,5 @@ public class PatientDetailsActivity extends Activity implements Handler.Callback
         public TextView diseaseProgression;
         public TextView stricture;
         public View healed;
-    }
+    }*/
 }

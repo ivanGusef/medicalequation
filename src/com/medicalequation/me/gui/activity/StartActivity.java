@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import com.medicalequation.me.R;
+import com.medicalequation.me.TestActivity;
 
 public class StartActivity extends Activity {
     /**
@@ -24,16 +25,11 @@ public class StartActivity extends Activity {
             case R.id.patients:
                 startActivity(new Intent(this, PatientListActivity.class));
                 break;
-            case R.id.manual:
-                Intent intent = new Intent(this, InfoActivity.class);
-                intent.putExtra(InfoActivity.CONTENT, R.layout.a_manual);
-                startActivity(intent);
-                break;
             case R.id.about:
-                intent = new Intent(this, InfoActivity.class);
-                intent.putExtra(InfoActivity.CONTENT, R.layout.a_about);
-                startActivity(intent);
+                startActivity(new Intent(this, InfoActivity.class));
                 break;
+            case R.id.test:
+                startActivity(new Intent(this, TestActivity.class));
         }
     }
 }

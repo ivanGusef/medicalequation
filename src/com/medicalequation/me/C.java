@@ -1,7 +1,5 @@
 package com.medicalequation.me;
 
-import com.medicalequation.me.utils.PreferenceManager;
-
 /**
  * Created with IntelliJ IDEA.
  * User: Иван Гусев
@@ -26,12 +24,15 @@ public class C {
     }
 
     public static class PreferenceKey {
-        public static final String HIFU = "hifu_" + PreferenceManager.PLACE_HOLDER_RESULT + "_" + PreferenceManager.PLACE_HOLDER_INDEX;
-        public static final String HIFU_TUR = "hifu_tur_" + PreferenceManager.PLACE_HOLDER_RESULT + "_" + PreferenceManager.PLACE_HOLDER_INDEX;
+        public static final String THERAPY = PlaceHolder.THERAPY + "_" + PlaceHolder.RESULT + "_" + PlaceHolder.INDEX;
+        public static final String THERAPY_LAST_PATIENTS_NUM = PlaceHolder.THERAPY + "_last_patients_num";
 
         public static final String[] RESULTS = {"urine_incontinence", "acute_urinary_retention", "disease_progression", "stricture"};
+    }
 
-        public static final String HIFU_LAST_PATIENTS_NUM = "hifu_last_patients_num";
-        public static final String HIFU_TUR_LAST_PATIENTS_NUM = "hifu_tur_last_patients_num";
+    public static class PlaceHolder {
+        public static final String INDEX = "%index%";
+        public static final String RESULT = "%result%";
+        public static final String THERAPY = "%therapy%";
     }
 }

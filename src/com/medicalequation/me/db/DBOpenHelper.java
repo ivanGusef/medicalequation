@@ -30,7 +30,6 @@ public class DBOpenHelper extends SQLiteOpenHelper {
         try {
             db.beginTransaction();
             PatientTable.onCreate(db);
-            TreatmentTable.onCreate(db);
             init(mContext, db);
             db.setTransactionSuccessful();
         } finally {
@@ -44,7 +43,6 @@ public class DBOpenHelper extends SQLiteOpenHelper {
             try {
                 db.beginTransaction();
                 PatientTable.onUpgrade(db);
-                TreatmentTable.onUpgrade(db);
                 init(mContext, db);
                 db.setTransactionSuccessful();
             } finally {

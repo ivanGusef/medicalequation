@@ -14,13 +14,9 @@ import com.medicalequation.me.R;
  */
 public class InfoActivity extends Activity {
 
-    public static final String CONTENT = "content";
-
-    private WebView mWebView;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(getIntent().getIntExtra(CONTENT, R.layout.a_manual));
+        setContentView(R.layout.a_about);
     }
 }

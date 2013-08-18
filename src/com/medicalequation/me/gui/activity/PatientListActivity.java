@@ -8,7 +8,6 @@ import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.*;
 import android.widget.*;
@@ -16,9 +15,9 @@ import com.medicalequation.me.C;
 import com.medicalequation.me.R;
 import com.medicalequation.me.db.PatientProvider;
 import com.medicalequation.me.db.PatientTable;
-import com.medicalequation.me.db.TreatmentTable;
 import com.medicalequation.me.gui.ListQuery;
 import com.medicalequation.me.gui.dialog.TherapyFilterDialog;
+import com.medicalequation.me.model.therapy.TherapyType;
 
 /**
  * Created with IntelliJ IDEA.
@@ -97,7 +96,7 @@ public class PatientListActivity extends ListActivity implements LoaderManager.L
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        String[] projection = {PatientTable.CN_ID, PatientTable.CN_FIO, PatientTable.СТ_TREATMENT_ID, PatientTable.CN_HEALED};
+        String[] projection = {PatientTable.CN_ID, PatientTable.CN_FIO, PatientTable.CN_THERAPY};
         return new CursorLoader(this, PatientProvider.CONTENT_URI, projection, listQuery.toString(), null, PatientTable.CN_FIO + " ASC");
     }
 
@@ -114,31 +113,19 @@ public class PatientListActivity extends ListActivity implements LoaderManager.L
 
     @Override
     protected void onListItemClick(ListView l, View v, int position, long id) {
-        Intent intent = new Intent(this, PatientDetailsActivity.class);
+        Intent intent = new Intent(this, PatientViewActivity.class);
         intent.putExtra(C.Extra.ID, id);
         startActivity(intent);
     }
 
-    public void reloadCursor(ListQuery listQuery) {
-        this.listQuery = listQuery;
+    public void reloadCursor() {
         getLoaderManager().restartLoader(0, null, PatientListActivity.this);
     }
 
     private class PatientsAdapter extends CursorAdapter {
 
-        private final int colorRed;
-        private final int colorGreen;
-        private final String healed;
-        private final String notHealed;
-        private Cursor treatmentCursor;
-
         public PatientsAdapter() {
             super(PatientListActivity.this, null, true);
-            colorRed = getResources().getColor(R.color.red_alpha_30);
-            colorGreen = getResources().getColor(R.color.green);
-            healed = getString(R.string.healed);
-            notHealed = getString(R.string.not_healed);
-            treatmentCursor = getContentResolver().query(PatientProvider.TREATMENT_URI, null, null, null, null);
         }
 
         @Override
@@ -157,7 +144,6 @@ public class PatientListActivity extends ListActivity implements LoaderManager.L
             View view = getLayoutInflater().inflate(R.layout.i_patient, null);
             holder.fio = (TextView) view.findViewById(R.id.patient_fio);
             holder.group = (TextView) view.findViewById(R.id.patient_group);
-            holder.healed = (TextView) view.findViewById(R.id.patient_healed);
             view.setTag(holder);
             return view;
         }
@@ -166,57 +152,12 @@ public class PatientListActivity extends ListActivity implements LoaderManager.L
         public void bindView(View view, Context context, Cursor cursor) {
             ViewHolder holder = (ViewHolder) view.getTag();
             holder.fio.setText(cursor.getString(1));
-            SetTreatmentTask task;
-            if ((task = (SetTreatmentTask) holder.group.getTag()) != null) {
-                task.cancel(true);
-            }
-            task = new SetTreatmentTask(holder.group);
-            holder.group.setTag(task);
-            task.execute(cursor.getLong(2));
-            holder.healed.setTextColor(cursor.getLong(3) == 1 ? colorGreen : colorRed);
-            holder.healed.setText(cursor.getInt(3) == 1 ? healed : notHealed);
-        }
-
-        @Override
-        protected void finalize() throws Throwable {
-            if (treatmentCursor != null) treatmentCursor.close();
-            super.finalize();
+            TherapyType therapy = TherapyType.valueOf(cursor.getString(2));
+            holder.group.setText(therapy == null ? "" : therapy.label);
         }
 
         class ViewHolder {
-            TextView fio, group, healed;
-        }
-    }
-
-    private class SetTreatmentTask extends AsyncTask<Long, Void, String> {
-
-        private TextView mTextView;
-
-        private SetTreatmentTask(TextView mTextView) {
-            this.mTextView = mTextView;
-        }
-
-        @Override
-        protected void onPreExecute() {
-            mTextView.setText(R.string.loading);
-        }
-
-        @Override
-        protected String doInBackground(Long... params) {
-            String result = "";
-            Cursor c = getContentResolver().query(Uri.parse(PatientProvider.TREATMENT_URI + "/" + params[0]), null, null, null, null);
-            if (c != null) {
-                if (c.moveToFirst()) {
-                    result = c.getString(c.getColumnIndex(TreatmentTable.CN_NAME));
-                }
-                c.close();
-            }
-            return result;
-        }
-
-        @Override
-        protected void onPostExecute(String s) {
-            mTextView.setText(s);
+            TextView fio, group;
         }
     }
 }

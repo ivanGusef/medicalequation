@@ -18,10 +18,4 @@
             android:layout_height="wrap_content"
             android:text="HIFU"
             android:textColor="@color/blue.alpha.30"/>
-    <TextView
-            android:id="@+id/patient.healed"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/healed"
-            android:textColor="@color/green.alpha.30"/>
 </LinearLayout>
