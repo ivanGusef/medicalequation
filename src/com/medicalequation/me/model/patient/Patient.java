@@ -26,6 +26,13 @@ public class Patient implements BaseEntity {
     public Map<String, Number> immutableValues;
     public Map<String, Number> resultValues;
 
+    public Patient() {
+    }
+
+    public Patient(long id) {
+        this.id = id;
+    }
+
     @Override
     public ContentValues convert() {
         ContentValues cv = new ContentValues();
@@ -43,13 +50,13 @@ public class Patient implements BaseEntity {
         fio = cursor.getString(cursor.getColumnIndex(PatientTable.CN_FIO));
         therapy = TherapyType.getByName(cursor.getString(cursor.getColumnIndex(PatientTable.CN_THERAPY)));
         mutableValues = new Gson().fromJson(cursor.getString(cursor.getColumnIndex(PatientTable.CN_MUTABLE_VALUES)),
-                new TypeToken<Map<String, String>>() {
+                new TypeToken<Map<String, Number>>() {
                 }.getType());
         immutableValues = new Gson().fromJson(cursor.getString(cursor.getColumnIndex(PatientTable.CN_IMMUTABLE_VALUES)),
-                new TypeToken<Map<String, String>>() {
+                new TypeToken<Map<String, Number>>() {
                 }.getType());
         resultValues = new Gson().fromJson(cursor.getString(cursor.getColumnIndex(PatientTable.CN_RESULT_VALUES)),
-                new TypeToken<Map<String, String>>() {
+                new TypeToken<Map<String, Number>>() {
                 }.getType());
     }
 }

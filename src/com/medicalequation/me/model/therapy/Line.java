@@ -1,5 +1,8 @@
 package com.medicalequation.me.model.therapy;
 
+import android.content.Context;
+import com.medicalequation.me.R;
+
 /**
  * Created with IntelliJ IDEA.
  * User: ivan
@@ -14,12 +17,15 @@ public class Line {
     public LineType type;
     public Validator validator;
 
-    public boolean validate(Number number) {
-        if (validator == null)
-            return true;
-        if (number.doubleValue() < validator.min.doubleValue() || number.doubleValue() > validator.max.doubleValue()) {
-            return false;
+    public String validate(Context context, Number number) {
+        if (number == null) {
+            return context.getString(R.string.e_illegalInput);
         }
-        return true;
+        if (validator == null)
+            return null;
+        if (number.doubleValue() < validator.min.doubleValue() || number.doubleValue() > validator.max.doubleValue()) {
+            return context.getString(R.string.e_outOfBounds, label, validator.min, validator.max);
+        }
+        return null;
     }
 }

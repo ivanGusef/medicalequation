@@ -24,8 +24,8 @@ public class TestActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.a_patient_edit);
-        patientViewBuilder = new PatientViewBuilder(this, true);
-        patientViewBuilder.generate(TherapyType.HIFU);
+        patientViewBuilder = new PatientViewBuilder(this, TherapyType.HIFU, true);
+        patientViewBuilder.generate();
 
         Spinner spinner = (Spinner) findViewById(R.id.patient_therapy);
         ArrayAdapter<String> adapter = new TestAdapter();

@@ -8,13 +8,11 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import com.medicalequation.me.R;
 import com.medicalequation.me.TherapyManager;
-import com.medicalequation.me.exception.ValidateException;
 import com.medicalequation.me.model.therapy.Line;
 import com.medicalequation.me.model.therapy.LineType;
 import com.medicalequation.me.model.therapy.Therapy;
 import com.medicalequation.me.model.therapy.TherapyType;
 
-import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -45,8 +43,13 @@ public class PatientViewBuilder {
     private Map<String, TextView> resultHolder = new HashMap<String, TextView>();
 
     public PatientViewBuilder(Activity activity, boolean editMode) {
+        this(activity, null, editMode);
+    }
+
+    public PatientViewBuilder(Activity activity, TherapyType therapyType, boolean editMode) {
         this.activity = activity;
         this.editMode = editMode;
+        setTherapy(therapyType);
 
         mutableContainer = (LinearLayout) activity.findViewById(R.id.mutable_char_container);
         immutableContainer = (LinearLayout) activity.findViewById(R.id.immutable_char_container);
@@ -57,9 +60,17 @@ public class PatientViewBuilder {
         resultHeader = (TextView) activity.findViewById(R.id.result_container_header);
     }
 
-    public void generate(TherapyType therapyType) {
-        clear();
+    public void setTherapy(TherapyType therapyType) {
+        if (therapyType == null)
+            return;
         currentTherapy = TherapyManager.getInstance(activity).loadTherapy(therapyType);
+    }
+
+    public void generate() {
+        if (currentTherapy == null) {
+            throw new NullPointerException("currentTherapy must be set before call generate()");
+        }
+        clear();
 
         for (Line mutableLine : currentTherapy.mutableLines) {
             View mutableLineView = activity.getLayoutInflater().inflate(editMode ? R.layout.char_edit_line : R.layout.char_view_line, null);
@@ -86,20 +97,26 @@ public class PatientViewBuilder {
     }
 
     public void setMutableValues(Map<String, Number> mutableValues) {
-        for (String fieldName : mutableValues.keySet()) {
-            mutableHolder.get(fieldName).setText(String.valueOf(mutableValues.get(fieldName)));
+        Number value;
+        for (String fieldName : mutableHolder.keySet()) {
+            value = mutableValues.get(fieldName);
+            mutableHolder.get(fieldName).setText(value != null ? String.valueOf(value) : null);
         }
     }
 
     public void setImmutableValues(Map<String, Number> immutableValues) {
-        for (String fieldName : immutableValues.keySet()) {
-            immutableHolder.get(fieldName).setText(String.valueOf(immutableValues.get(fieldName)));
+        Number value;
+        for (String fieldName : immutableHolder.keySet()) {
+            value = immutableValues.get(fieldName);
+            immutableHolder.get(fieldName).setText(value != null ? String.valueOf(value) : null);
         }
     }
 
     public void setResultValues(Map<String, Number> resultValues) {
-        for (String fieldName : resultValues.keySet()) {
-            resultHolder.get(fieldName).setText(String.valueOf(resultValues.get(fieldName)));
+        Number value;
+        for (String fieldName : resultHolder.keySet()) {
+            value = resultValues.get(fieldName);
+            resultHolder.get(fieldName).setText(value != null ? String.valueOf(value) : null);
         }
     }
 
@@ -112,16 +129,12 @@ public class PatientViewBuilder {
             editor = mutableHolder.get(mutableLine.name);
             strValue = editor.getText().toString();
             if (!TextUtils.isGraphic(strValue)) {
-                editor.setError(activity.getString(R.string.e_illegalInput));
-                editor.requestFocus();
-                return new HashMap<String, Number>();
-            }
-            if(mutableLine.type.equals(LineType.INT)) value = Integer.valueOf(strValue); else value = Double.valueOf(strValue);
-            if (!mutableLine.validate(value)) {
-                editor.setError(activity.getString(R.string.e_outOfBounds, mutableLine.label, mutableLine.validator.min,
-                        mutableLine.validator.max));
-                editor.requestFocus();
-                return new HashMap<String, Number>();
+                value = null;
+            } else {
+                if (mutableLine.type.equals(LineType.INT))
+                    value = Integer.valueOf(strValue);
+                else
+                    value = Double.valueOf(strValue);
             }
             mutableValues.put(mutableLine.name, value);
         }
@@ -137,16 +150,12 @@ public class PatientViewBuilder {
             editor = immutableHolder.get(immutableLine.name);
             strValue = editor.getText().toString();
             if (!TextUtils.isGraphic(strValue)) {
-                editor.setError(activity.getString(R.string.e_illegalInput));
-                editor.requestFocus();
-                return new HashMap<String, Number>();
-            }
-            value = immutableLine.type.equals(LineType.INT) ? Integer.valueOf(strValue) : Double.valueOf(strValue);
-            if (!immutableLine.validate(value)) {
-                editor.setError(activity.getString(R.string.e_outOfBounds, immutableLine.label, immutableLine.validator.min,
-                        immutableLine.validator.max));
-                editor.requestFocus();
-                return new HashMap<String, Number>();
+                value = null;
+            } else {
+                if (immutableLine.type.equals(LineType.INT))
+                    value = Integer.valueOf(strValue);
+                else
+                    value = Double.valueOf(strValue);
             }
             immutableValues.put(immutableLine.name, value);
         }
@@ -159,23 +168,53 @@ public class PatientViewBuilder {
         Number value;
         String strValue;
         for (Line resultLine : currentTherapy.resultLines) {
-            editor = immutableHolder.get(resultLine.name);
+            editor = resultHolder.get(resultLine.name);
             strValue = editor.getText().toString();
             if (!TextUtils.isGraphic(strValue)) {
-                editor.setError(activity.getString(R.string.e_illegalInput));
-                editor.requestFocus();
-                return new HashMap<String, Number>();
-            }
-            value = resultLine.type.equals(LineType.INT) ? Integer.valueOf(strValue) : Double.valueOf(strValue);
-            if (!resultLine.validate(value)) {
-                editor.setError(activity.getString(R.string.e_outOfBounds, resultLine.label, resultLine.validator.min,
-                        resultLine.validator.max));
-                editor.requestFocus();
-                return new HashMap<String, Number>();
+                value = null;
+            } else {
+                if (resultLine.type.equals(LineType.INT))
+                    value = Integer.valueOf(strValue);
+                else
+                    value = Double.valueOf(strValue);
             }
             resultValues.put(resultLine.name, value);
         }
         return resultValues;
+    }
+
+    public boolean validateAll(Map<String, Number> mutableValues, Map<String, Number> immutableValues, Map<String, Number> resultValues) {
+        boolean valid = true;
+        TextView editor;
+        Number value;
+        String validateErrorMessage;
+        for (Line mutableLine : currentTherapy.mutableLines) {
+            editor = mutableHolder.get(mutableLine.name);
+            value = mutableValues.get(mutableLine.name);
+            if ((validateErrorMessage = mutableLine.validate(activity, value)) != null) {
+                editor.setError(validateErrorMessage);
+                valid = false;
+            }
+        }
+
+        for (Line immutableLine : currentTherapy.immutableLines) {
+            editor = immutableHolder.get(immutableLine.name);
+            value = immutableValues.get(immutableLine.name);
+            if ((validateErrorMessage = immutableLine.validate(activity, value)) != null) {
+                editor.setError(validateErrorMessage);
+                valid = false;
+            }
+        }
+
+        for (Line resultLine : currentTherapy.resultLines) {
+            editor = resultHolder.get(resultLine.name);
+            value = resultValues.get(resultLine.name);
+            if ((validateErrorMessage = resultLine.validate(activity, value)) != null) {
+                editor.setError(validateErrorMessage);
+                valid = false;
+            }
+        }
+        return valid;
     }
 
     private TextView configureView(View parent, Line line) {

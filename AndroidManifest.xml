@@ -31,6 +31,12 @@
             android:name=".gui.activity.PatientViewActivity"
             android:screenOrientation="portrait"/>
         <activity
+            android:name=".gui.activity.PatientEditActivity"
+            android:screenOrientation="portrait"/>
+        <activity
+            android:name=".gui.activity.CalculateActivity"
+            android:screenOrientation="portrait"/>
+        <activity
             android:name=".TestActivity"
             android:screenOrientation="portrait"/>
         <provider

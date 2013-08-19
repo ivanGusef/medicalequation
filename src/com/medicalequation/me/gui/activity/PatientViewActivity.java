@@ -1,12 +1,17 @@
 package com.medicalequation.me.gui.activity;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.LoaderManager;
 import android.content.CursorLoader;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.widget.TextView;
 import com.medicalequation.me.C;
 import com.medicalequation.me.R;
@@ -72,11 +77,48 @@ public class PatientViewActivity extends Activity implements LoaderManager.Loade
         fioView.setText(patient.fio);
         therapyView.setText(patient.therapy.label);
 
-        viewBuilder.generate(patient.therapy);
+        viewBuilder.setTherapy(patient.therapy);
+        viewBuilder.generate();
 
         viewBuilder.setMutableValues(patient.mutableValues);
         viewBuilder.setImmutableValues(patient.immutableValues);
         viewBuilder.setResultValues(patient.resultValues);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.m_patient_details, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == R.id.mi_edit) {
+            startActivity(new Intent(this, PatientEditActivity.class).putExtra(C.Extra.ID, id));
+        } else {
+            showDeleteDialog();
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    private void showDeleteDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle(getString(R.string.deletion));
+        builder.setMessage(getString(R.string.delete_confirmation));
+        DialogInterface.OnClickListener listener = new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                if (which == DialogInterface.BUTTON_POSITIVE) {
+                    Uri uriForDel = Uri.parse(PatientProvider.CONTENT_URI + "/" + id);
+                    getContentResolver().delete(uriForDel, null, null);
+                    finish();
+                }
+                dialog.dismiss();
+            }
+        };
+        builder.setNegativeButton(R.string.no, listener);
+        builder.setPositiveButton(R.string.yes, listener);
+        builder.create().show();
     }
 
     @Override

@@ -3,6 +3,7 @@
     <string name="app_name">MedEq</string>
     <string name="add.patient">Добавить пациента</string>
     <string name="patients">Пациенты</string>
+    <string name="allPatients">Все пациенты</string>
     <string name="app.about">О программе</string>
     <string name="app.manual">Руководство пользователя</string>
 
@@ -41,9 +42,9 @@
     <string name="view">Просмотреть</string>
     <string name="delete">Удалить</string>
     <string name="calculate">Рассчитать</string>
-    <string name="e.illegalInput">Ошибка! Неверный формат данных.</string>
+    <string name="e.illegalInput">Неверный формат данных.</string>
     <string name="e.outOfBounds">Значение поля %1$s должно быть в пределах от %2$s до %3$s.</string>
-    <string name="e.emptyFio">Поле ФИО не может быть пустым</string>
+    <string name="e.emptyFio">Поле ФИО не может быть пустым.</string>
     <string name="error_caught">Произошла ошибка. Пожалуйста, отправьте письмо с отчетом.</string>
     <string name="deletion">Удаление</string>
     <string name="delete.confirmation">Вы действительно хотите удалить пациента?</string>
@@ -70,6 +71,9 @@
     <string name="additional">Дополнительно</string>
     <string name="patient.therapy">Терапия</string>
     <string name="app.test">Тест</string>
+    <string name="app.calc">Рассчитать</string>
+    <string name="e_not_enough_data">Недостаточно данных для расчета статистики.</string>
+    <string name="calculating">Выполняется расчет...</string>
 
 
     <string-array name="treatment">

@@ -19,17 +19,17 @@ public class StartActivity extends Activity {
 
     public void onClick(View view) {
         switch (view.getId()) {
+            case R.id.calc:
+                startActivity(new Intent(this, CalculateActivity.class));
+                break;
             case R.id.add_patient:
-                startActivity(new Intent(this, PatientDetailsActivity.class));
+                startActivity(new Intent(this, PatientEditActivity.class));
                 break;
             case R.id.patients:
                 startActivity(new Intent(this, PatientListActivity.class));
                 break;
             case R.id.about:
                 startActivity(new Intent(this, InfoActivity.class));
-                break;
-            case R.id.test:
-                startActivity(new Intent(this, TestActivity.class));
         }
     }
 }

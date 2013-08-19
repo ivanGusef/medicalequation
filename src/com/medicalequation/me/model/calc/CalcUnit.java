@@ -1,7 +1,8 @@
-package com.medicalequation.me.calc;
+package com.medicalequation.me.model.calc;
 
-import com.medicalequation.me.model.therapy.TherapyType;
+import com.medicalequation.me.model.therapy.Therapy;
 
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -13,8 +14,8 @@ import java.util.Map;
  */
 public class CalcUnit implements Comparable<CalcUnit> {
 
-    public TherapyType therapyType;
-    public Map<String, Number> results;
+    public Therapy therapy;
+    public Map<String, Number> results = new HashMap<String, Number>();
 
     @Override
     public int compareTo(CalcUnit another) {
@@ -25,6 +26,6 @@ public class CalcUnit implements Comparable<CalcUnit> {
         for (String param : another.results.keySet()) {
             sumAnother += Math.abs(another.results.get(param).floatValue()-1);
         }
-        return sumThis == sumAnother ? 0 : sumThis > sumAnother ? -1 : 1;
+        return sumThis == sumAnother ? 0 : sumThis > sumAnother ? 1 : -1;
     }
 }
