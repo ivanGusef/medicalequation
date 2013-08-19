@@ -18,12 +18,17 @@ public class Line {
     public Validator validator;
 
     public String validate(Context context, Number number) {
-        if (number == null) {
+        return validate(context, number, false);
+    }
+
+    public String validate(Context context, Number number, boolean nullable) {
+        if (!nullable && number == null) {
             return context.getString(R.string.e_illegalInput);
         }
         if (validator == null)
             return null;
-        if (number.doubleValue() < validator.min.doubleValue() || number.doubleValue() > validator.max.doubleValue()) {
+        if (number != null && (number.doubleValue() < validator.min.doubleValue()
+                || number.doubleValue() > validator.max.doubleValue())) {
             return context.getString(R.string.e_outOfBounds, label, validator.min, validator.max);
         }
         return null;

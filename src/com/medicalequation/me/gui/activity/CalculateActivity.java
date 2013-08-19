@@ -7,6 +7,8 @@ import android.content.DialogInterface;
 import android.database.Cursor;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.text.InputType;
 import android.text.TextUtils;
 import android.util.Log;
@@ -25,6 +27,7 @@ import com.medicalequation.me.R;
 import com.medicalequation.me.TherapyManager;
 import com.medicalequation.me.db.PatientProvider;
 import com.medicalequation.me.db.PatientTable;
+import com.medicalequation.me.exception.ValidateException;
 import com.medicalequation.me.gui.dialog.TherapyDetailsDialog;
 import com.medicalequation.me.model.calc.CalcUnit;
 import com.medicalequation.me.model.therapy.Line;
@@ -47,11 +50,16 @@ import static com.medicalequation.me.C.PreferenceKey.*;
  * Time: 11:02 PM
  * May the force be with you always.
  */
-public class CalculateActivity extends Activity {
+public class CalculateActivity extends Activity implements Handler.Callback {
+
+    public static final int VALIDATE_ERROR = 1;
+    public static final String ERROR_MSG_KEY = "errorMsg";
+    public static final String LINE_NAME_KEY = "lineName";
 
     private Map<String, TextView> charHolder = new HashMap<String, TextView>();
     private OnTherapyClickListener listener = new OnTherapyClickListener();
     private TherapyManager therapyManager;
+    private Handler errorHandler = new Handler(this);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,6 +81,16 @@ public class CalculateActivity extends Activity {
             new CalculateTask().execute();
         }
         return true;
+    }
+
+    @Override
+    public boolean handleMessage(Message msg) {
+        if (msg.what == VALIDATE_ERROR) {
+            Bundle data = msg.getData();
+            charHolder.get(data.getString(LINE_NAME_KEY)).setError(data.getString(ERROR_MSG_KEY));
+            return true;
+        }
+        return false;
     }
 
     private class CreateGuiTask extends AsyncTask<Void, Void, List<Line>> {
@@ -142,11 +160,14 @@ public class CalculateActivity extends Activity {
         @Override
         protected void onPostExecute(ResultCalc result) {
             mDialog.dismiss();
+            LinearLayout linearLayout = (LinearLayout) findViewById(R.id.result_container);
+            linearLayout.removeAllViewsInLayout();
+            if (result == null) {
+                return;
+            }
             if (result.errorMessage != null) {
                 Toast.makeText(CalculateActivity.this, result.errorMessage, Toast.LENGTH_SHORT).show();
             } else {
-                LinearLayout linearLayout = (LinearLayout) findViewById(R.id.result_container);
-                linearLayout.removeAllViewsInLayout();
                 Button therapyBtn;
                 int i = 1;
                 for (CalcUnit resultUnit : result.resultUnits) {
@@ -175,7 +196,11 @@ public class CalculateActivity extends Activity {
             Therapy therapy;
             for (TherapyType therapyType : TherapyType.values()) {
                 therapy = therapyManager.loadTherapy(therapyType);
-                input.add(getCharacteristics(therapy));
+                try {
+                    input.add(getCharacteristics(therapy));
+                } catch (ValidateException e) {
+                    return null;
+                }
             }
             filterCalcUnits(input);
             if (input.isEmpty()) {
@@ -242,8 +267,10 @@ public class CalculateActivity extends Activity {
             calcUnit.therapy = therapy;
             Number value;
             String strValue;
+            TextView editor;
             for (Line line : therapy.mutableLines) {
-                strValue = charHolder.get(line.name).getText().toString();
+                editor = charHolder.get(line.name);
+                strValue = editor.getText().toString();
                 if (!TextUtils.isGraphic(strValue)) {
                     value = null;
                 } else {
@@ -251,6 +278,17 @@ public class CalculateActivity extends Activity {
                         value = Integer.valueOf(strValue);
                     else
                         value = Double.valueOf(strValue);
+                }
+                String errorMessage = line.validate(CalculateActivity.this, value, true);
+                if (errorMessage != null) {
+                    Message message = new Message();
+                    message.what = VALIDATE_ERROR;
+                    Bundle data = new Bundle();
+                    data.putString(ERROR_MSG_KEY, errorMessage);
+                    data.putString(LINE_NAME_KEY, line.name);
+                    message.setData(data);
+                    errorHandler.sendMessage(message);
+                    throw new ValidateException(errorMessage);
                 }
                 calcUnit.results.put(line.name, value);
             }
