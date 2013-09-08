@@ -30,7 +30,7 @@ public class TherapyDetailsDialog extends Dialog {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.d_therapy_details);
-        ((TextView) findViewById(R.id.therapy_header)).setText(calcUnit.therapy.type.label);
+        setTitle(calcUnit.therapy.type.label);
         LinearLayout container = (LinearLayout) findViewById(R.id.result_container);
         View viewLine;
         for (Line line : calcUnit.therapy.resultLines) {

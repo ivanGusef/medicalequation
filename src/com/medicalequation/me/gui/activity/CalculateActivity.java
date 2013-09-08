@@ -28,6 +28,7 @@ import com.medicalequation.me.TherapyManager;
 import com.medicalequation.me.db.PatientProvider;
 import com.medicalequation.me.db.PatientTable;
 import com.medicalequation.me.exception.ValidateException;
+import com.medicalequation.me.gui.SelectRunListener;
 import com.medicalequation.me.gui.dialog.TherapyDetailsDialog;
 import com.medicalequation.me.model.calc.CalcUnit;
 import com.medicalequation.me.model.therapy.Line;
@@ -127,12 +128,34 @@ public class CalculateActivity extends Activity implements Handler.Callback {
             for (Line line : lines) {
                 lineView = getLayoutInflater().inflate(R.layout.char_edit_line, null);
                 ((TextView) lineView.findViewById(R.id.label)).setText(line.label);
-                valueView = (TextView) lineView.findViewById(R.id.value);
-                valueView.setInputType(line.type.equals(LineType.INT) ? InputType.TYPE_CLASS_NUMBER
-                        : InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL);
+                valueView = configureView(lineView, line);
                 charHolder.put(line.name, valueView);
                 container.addView(lineView);
             }
+        }
+
+        private TextView configureView(View parent, Line line) {
+            TextView lineView = (TextView) parent.findViewById(R.id.value);
+            switch (line.type) {
+                case INT:
+                    lineView.setInputType(InputType.TYPE_CLASS_NUMBER);
+                    break;
+                case REAL:
+                    lineView.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL);
+                    break;
+                case SELECT:
+                    lineView.setFocusable(false);
+                    lineView.setFocusableInTouchMode(false);
+                    lineView.setLongClickable(false);
+                    final String[] items = line.choiceItems;
+                    lineView.setOnClickListener(new SelectRunListener(CalculateActivity.this, items));
+                    break;
+                default:
+                    throw new IllegalArgumentException("Unknown line type " + line.type);
+            }
+            lineView.setInputType(line.type.equals(LineType.INT) ? InputType.TYPE_CLASS_NUMBER
+                    : InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL);
+            return lineView;
         }
     }
 
@@ -274,10 +297,7 @@ public class CalculateActivity extends Activity implements Handler.Callback {
                 if (!TextUtils.isGraphic(strValue)) {
                     value = null;
                 } else {
-                    if (line.type.equals(LineType.INT))
-                        value = Integer.valueOf(strValue);
-                    else
-                        value = Double.valueOf(strValue);
+                    value = getByType(strValue, line);
                 }
                 String errorMessage = line.validate(CalculateActivity.this, value, true);
                 if (errorMessage != null) {
@@ -293,6 +313,21 @@ public class CalculateActivity extends Activity implements Handler.Callback {
                 calcUnit.results.put(line.name, value);
             }
             return calcUnit;
+        }
+
+        private Number getByType(String strValue, Line line) {
+            switch (line.type) {
+                case INT:
+                    return Integer.valueOf(strValue);
+                case REAL:
+                    return Double.valueOf(strValue);
+                case SELECT:
+                    for (int i = 0; i < line.choiceItems.length; i++) {
+                        if (strValue.equals(line.choiceItems[i])) return i+1;
+                    }
+                default:
+                    throw new IllegalArgumentException("Unknown line type " + line.type);
+            }
         }
 
         private Cursor getPatients(Therapy therapy) {

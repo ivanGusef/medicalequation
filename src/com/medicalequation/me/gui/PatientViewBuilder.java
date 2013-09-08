@@ -25,22 +25,22 @@ import java.util.Map;
  */
 public class PatientViewBuilder {
 
-    private Activity activity;
+    private final Activity activity;
+    private final boolean editMode;
+
+    private final LinearLayout mutableContainer;
+    private final LinearLayout immutableContainer;
+    private final LinearLayout resultContainer;
+
+    private final TextView mutableHeader;
+    private final TextView immutableHeader;
+    private final TextView resultHeader;
+
+    private final Map<String, TextView> mutableHolder = new HashMap<String, TextView>();
+    private final Map<String, TextView> immutableHolder = new HashMap<String, TextView>();
+    private final Map<String, TextView> resultHolder = new HashMap<String, TextView>();
 
     private Therapy currentTherapy;
-    private boolean editMode;
-
-    private LinearLayout mutableContainer;
-    private LinearLayout immutableContainer;
-    private LinearLayout resultContainer;
-
-    private TextView mutableHeader;
-    private TextView immutableHeader;
-    private TextView resultHeader;
-
-    private Map<String, TextView> mutableHolder = new HashMap<String, TextView>();
-    private Map<String, TextView> immutableHolder = new HashMap<String, TextView>();
-    private Map<String, TextView> resultHolder = new HashMap<String, TextView>();
 
     public PatientViewBuilder(Activity activity, boolean editMode) {
         this(activity, null, editMode);
@@ -98,25 +98,25 @@ public class PatientViewBuilder {
 
     public void setMutableValues(Map<String, Number> mutableValues) {
         Number value;
-        for (String fieldName : mutableHolder.keySet()) {
-            value = mutableValues.get(fieldName);
-            mutableHolder.get(fieldName).setText(value != null ? String.valueOf(value) : null);
+        for (Line mutableLine : currentTherapy.mutableLines) {
+            value = mutableValues.get(mutableLine.name);
+            setByType(value, mutableHolder, mutableLine);
         }
     }
 
     public void setImmutableValues(Map<String, Number> immutableValues) {
         Number value;
-        for (String fieldName : immutableHolder.keySet()) {
-            value = immutableValues.get(fieldName);
-            immutableHolder.get(fieldName).setText(value != null ? String.valueOf(value) : null);
+        for (Line immutableLine : currentTherapy.immutableLines) {
+            value = immutableValues.get(immutableLine.name);
+            setByType(value, immutableHolder, immutableLine);
         }
     }
 
     public void setResultValues(Map<String, Number> resultValues) {
         Number value;
-        for (String fieldName : resultHolder.keySet()) {
-            value = resultValues.get(fieldName);
-            resultHolder.get(fieldName).setText(value != null ? String.valueOf(value) : null);
+        for (Line resultLine : currentTherapy.resultLines) {
+            value = resultValues.get(resultLine.name);
+            setByType(value, resultHolder, resultLine);
         }
     }
 
@@ -131,10 +131,7 @@ public class PatientViewBuilder {
             if (!TextUtils.isGraphic(strValue)) {
                 value = null;
             } else {
-                if (mutableLine.type.equals(LineType.INT))
-                    value = Integer.valueOf(strValue);
-                else
-                    value = Double.valueOf(strValue);
+                value = getByType(strValue, mutableLine);
             }
             mutableValues.put(mutableLine.name, value);
         }
@@ -152,10 +149,7 @@ public class PatientViewBuilder {
             if (!TextUtils.isGraphic(strValue)) {
                 value = null;
             } else {
-                if (immutableLine.type.equals(LineType.INT))
-                    value = Integer.valueOf(strValue);
-                else
-                    value = Double.valueOf(strValue);
+                value = getByType(strValue, immutableLine);
             }
             immutableValues.put(immutableLine.name, value);
         }
@@ -173,10 +167,7 @@ public class PatientViewBuilder {
             if (!TextUtils.isGraphic(strValue)) {
                 value = null;
             } else {
-                if (resultLine.type.equals(LineType.INT))
-                    value = Integer.valueOf(strValue);
-                else
-                    value = Double.valueOf(strValue);
+                value = getByType(strValue, resultLine);
             }
             resultValues.put(resultLine.name, value);
         }
@@ -217,9 +208,59 @@ public class PatientViewBuilder {
         return valid;
     }
 
+    private Number getByType(String strValue, Line line) {
+        switch (line.type) {
+            case INT:
+                return Integer.valueOf(strValue);
+            case REAL:
+                return Double.valueOf(strValue);
+            case SELECT:
+                for (int i = 0; i < line.choiceItems.length; i++) {
+                    if (strValue.equals(line.choiceItems[i])) return i+1;
+                }
+            default:
+                throw new IllegalArgumentException("Unknown line type " + line.type);
+        }
+    }
+
+    private void setByType(Number value, Map<String, TextView> holder, Line line) {
+        if(value == null) {
+            holder.get(line.name).setText(null);
+            return;
+        }
+        switch (line.type) {
+            case INT:
+            case REAL:
+                holder.get(line.name).setText(String.valueOf(value));
+                break;
+            case SELECT:
+                holder.get(line.name).setText(line.choiceItems[value.intValue()-1]);
+                break;
+            default:
+                throw new IllegalArgumentException("Unknown line type " + line.type);
+        }
+    }
+
     private TextView configureView(View parent, Line line) {
         TextView lineView = (TextView) parent.findViewById(R.id.value);
         if (editMode) {
+            switch (line.type) {
+                case INT:
+                    lineView.setInputType(InputType.TYPE_CLASS_NUMBER);
+                    break;
+                case REAL:
+                    lineView.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL);
+                    break;
+                case SELECT:
+                    lineView.setFocusable(false);
+                    lineView.setFocusableInTouchMode(false);
+                    lineView.setLongClickable(false);
+                    final String[] items = line.choiceItems;
+                    lineView.setOnClickListener(new SelectRunListener(activity, items));
+                    break;
+                default:
+                    throw new IllegalArgumentException("Unknown line type " + line.type);
+            }
             lineView.setInputType(line.type.equals(LineType.INT) ? InputType.TYPE_CLASS_NUMBER
                     : InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL);
         }

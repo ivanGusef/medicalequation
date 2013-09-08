@@ -17,6 +17,8 @@ public class Line {
     public LineType type;
     public Validator validator;
 
+    public String[] choiceItems = null;
+
     public String validate(Context context, Number number) {
         return validate(context, number, false);
     }

@@ -7,9 +7,11 @@ import android.content.CursorLoader;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.Loader;
+import android.content.res.Configuration;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
@@ -48,7 +50,15 @@ public class PatientViewActivity extends Activity implements LoaderManager.Loade
     }
 
     @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        Log.i("INFO/ActivityManager", "onConfigurationChanged");
+        super.onConfigurationChanged(newConfig);
+        getLoaderManager().destroyLoader(1);
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
+        Log.i("INFO/ActivityManager", "onCreate");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.a_patient_view);
         fioView = (TextView) findViewById(R.id.patient_fio);
@@ -57,19 +67,14 @@ public class PatientViewActivity extends Activity implements LoaderManager.Loade
         if (savedInstanceState == null) {
             id = getIntent().getLongExtra(C.Extra.ID, 0);
         }
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
         Bundle b = new Bundle();
         b.putLong(C.Extra.ID, id);
         getLoaderManager().initLoader(1, b, this);
     }
 
     @Override
-    protected void onStop() {
-        super.onStop();
+    protected void onDestroy() {
+        super.onDestroy();
         getLoaderManager().destroyLoader(1);
     }
 
@@ -123,6 +128,7 @@ public class PatientViewActivity extends Activity implements LoaderManager.Loade
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+        Log.i("INFO/ActivityManager", "onCreateLoader");
         return new CursorLoader(this, Uri.parse(PatientProvider.CONTENT_URI + "/" + args.getLong(C.Extra.ID)), null, null, null, null);
     }
 
@@ -136,10 +142,12 @@ public class PatientViewActivity extends Activity implements LoaderManager.Loade
             }
             data.close();
         }
+        Log.i("INFO/ActivityManager", "onLoadFinished");
     }
 
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
+        Log.i("INFO/ActivityManager", "onLoaderReset");
         //nothing
     }
 }
