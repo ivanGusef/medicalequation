@@ -130,15 +130,17 @@ public class PatientEditActivity extends Activity implements LoaderManager.Loade
             if (!viewBuilder.validateAll(patient.mutableValues, patient.immutableValues, patient.resultValues)) {
                 return false;
             }
+            Intent intent = new Intent(this, PatientViewActivity.class);
             if (patient.id > 0) {
                 getContentResolver().update(PatientProvider.CONTENT_URI, patient.convert(), PatientTable.CN_ID + " = ?",
                         new String[]{String.valueOf(id)});
+                intent.putExtra(C.Extra.ID, id);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             } else {
                 long id = ContentUris.parseId(getContentResolver().insert(PatientProvider.CONTENT_URI, patient.convert()));
-                Intent intent = new Intent(this, PatientViewActivity.class);
                 intent.putExtra(C.Extra.ID, id);
-                startActivity(intent);
             }
+            startActivity(intent);
             finish();
         }
         return true;

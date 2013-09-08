@@ -16,10 +16,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.LinearLayout;
-import android.widget.TextView;
-import android.widget.Toast;
+import android.widget.*;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.medicalequation.me.C;
@@ -28,11 +25,10 @@ import com.medicalequation.me.TherapyManager;
 import com.medicalequation.me.db.PatientProvider;
 import com.medicalequation.me.db.PatientTable;
 import com.medicalequation.me.exception.ValidateException;
-import com.medicalequation.me.gui.SelectRunListener;
+import com.medicalequation.me.gui.PatientViewBuilder;
 import com.medicalequation.me.gui.dialog.TherapyDetailsDialog;
 import com.medicalequation.me.model.calc.CalcUnit;
 import com.medicalequation.me.model.therapy.Line;
-import com.medicalequation.me.model.therapy.LineType;
 import com.medicalequation.me.model.therapy.Therapy;
 import com.medicalequation.me.model.therapy.TherapyType;
 import com.medicalequation.me.utils.PreferenceManager;
@@ -57,7 +53,7 @@ public class CalculateActivity extends Activity implements Handler.Callback {
     public static final String ERROR_MSG_KEY = "errorMsg";
     public static final String LINE_NAME_KEY = "lineName";
 
-    private Map<String, TextView> charHolder = new HashMap<String, TextView>();
+    private Map<String, View> charHolder = new HashMap<String, View>();
     private OnTherapyClickListener listener = new OnTherapyClickListener();
     private TherapyManager therapyManager;
     private Handler errorHandler = new Handler(this);
@@ -88,7 +84,7 @@ public class CalculateActivity extends Activity implements Handler.Callback {
     public boolean handleMessage(Message msg) {
         if (msg.what == VALIDATE_ERROR) {
             Bundle data = msg.getData();
-            charHolder.get(data.getString(LINE_NAME_KEY)).setError(data.getString(ERROR_MSG_KEY));
+            ((TextView)charHolder.get(data.getString(LINE_NAME_KEY))).setError(data.getString(ERROR_MSG_KEY));
             return true;
         }
         return false;
@@ -124,38 +120,30 @@ public class CalculateActivity extends Activity implements Handler.Callback {
 
         private void fillContainer(LinearLayout container, List<Line> lines) {
             View lineView;
-            TextView valueView;
             for (Line line : lines) {
-                lineView = getLayoutInflater().inflate(R.layout.char_edit_line, null);
+                lineView = getLayoutInflater().inflate(line.type.editRes, null);
                 ((TextView) lineView.findViewById(R.id.label)).setText(line.label);
-                valueView = configureView(lineView, line);
-                charHolder.put(line.name, valueView);
+                charHolder.put(line.name, configureView(lineView, line));
                 container.addView(lineView);
             }
         }
 
-        private TextView configureView(View parent, Line line) {
-            TextView lineView = (TextView) parent.findViewById(R.id.value);
+        private View configureView(View parent, Line line) {
+            View editor = parent.findViewById(R.id.value);
             switch (line.type) {
                 case INT:
-                    lineView.setInputType(InputType.TYPE_CLASS_NUMBER);
+                    ((TextView)editor).setInputType(InputType.TYPE_CLASS_NUMBER);
                     break;
                 case REAL:
-                    lineView.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL);
+                    ((TextView)editor).setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL);
                     break;
                 case SELECT:
-                    lineView.setFocusable(false);
-                    lineView.setFocusableInTouchMode(false);
-                    lineView.setLongClickable(false);
-                    final String[] items = line.choiceItems;
-                    lineView.setOnClickListener(new SelectRunListener(CalculateActivity.this, items));
+                    ((Spinner) editor).setAdapter(new PatientViewBuilder.SelectAdapter(CalculateActivity.this, line.choiceItems));
                     break;
                 default:
                     throw new IllegalArgumentException("Unknown line type " + line.type);
             }
-            lineView.setInputType(line.type.equals(LineType.INT) ? InputType.TYPE_CLASS_NUMBER
-                    : InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL);
-            return lineView;
+            return editor;
         }
     }
 
@@ -289,16 +277,8 @@ public class CalculateActivity extends Activity implements Handler.Callback {
             CalcUnit calcUnit = new CalcUnit();
             calcUnit.therapy = therapy;
             Number value;
-            String strValue;
-            TextView editor;
             for (Line line : therapy.mutableLines) {
-                editor = charHolder.get(line.name);
-                strValue = editor.getText().toString();
-                if (!TextUtils.isGraphic(strValue)) {
-                    value = null;
-                } else {
-                    value = getByType(strValue, line);
-                }
+                value = getByType(charHolder.get(line.name), line);
                 String errorMessage = line.validate(CalculateActivity.this, value, true);
                 if (errorMessage != null) {
                     Message message = new Message();
@@ -315,16 +295,17 @@ public class CalculateActivity extends Activity implements Handler.Callback {
             return calcUnit;
         }
 
-        private Number getByType(String strValue, Line line) {
+        private Number getByType(View editor, Line line) {
+            String strValue;
             switch (line.type) {
                 case INT:
-                    return Integer.valueOf(strValue);
+                    strValue = ((TextView) editor).getText().toString();
+                    return TextUtils.isGraphic(strValue) ? Integer.valueOf(strValue) : null;
                 case REAL:
-                    return Double.valueOf(strValue);
+                    strValue = ((TextView) editor).getText().toString();
+                    return TextUtils.isGraphic(strValue) ? Double.valueOf(strValue) : null;
                 case SELECT:
-                    for (int i = 0; i < line.choiceItems.length; i++) {
-                        if (strValue.equals(line.choiceItems[i])) return i+1;
-                    }
+                    return ((Spinner) editor).getSelectedItemPosition() + 1;
                 default:
                     throw new IllegalArgumentException("Unknown line type " + line.type);
             }
