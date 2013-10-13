@@ -67,19 +67,14 @@ public class PatientEditActivity extends Activity implements LoaderManager.Loade
         } else {
             id = savedInstanceState.getLong(C.Extra.ID);
         }
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
         Bundle b = new Bundle();
         b.putLong(C.Extra.ID, id);
         getLoaderManager().initLoader(1, b, this);
     }
 
     @Override
-    protected void onStop() {
-        super.onStop();
+    protected void onDestroy() {
+        super.onDestroy();
         getLoaderManager().destroyLoader(1);
     }
 
